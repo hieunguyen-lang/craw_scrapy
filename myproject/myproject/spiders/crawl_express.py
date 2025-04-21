@@ -4,7 +4,7 @@ import re
 from myproject.items import ArticleItem
 class ExpressSpider(scrapy.Spider):
     
-    name = "express_spider"
+    name = "express_spider1"
     allowed_domains = ["vnexpress.net"]
     start_urls = ["https://vnexpress.net"
                 #   "https://vnexpress.net/the-gioi",
@@ -46,26 +46,35 @@ class ExpressSpider(scrapy.Spider):
         return list_category
     def get_article_category(self,response):
         articles = response.xpath('//*[@id="automation_TV1"]/div/article')
-            
+        if str(response.url) == "https://timkiem.vnexpress.net/" or len(articles) == 0:
+            print("🔍 Không tìm thấy bài viết nào trên trang này.")
+            self.page = 1  # Reset lại
+            return
         for article in articles:
-            # print(article.xpath('.//h3[@class="title-news"]/a/text()').get())
-            # print(article.xpath('.//a/@href').get())
-            # print(article.xpath('.//p[@class="description"]/a/text()').get())
-            title_article = article.xpath('.//h3[@class="title-news"]/a/text()').get()
-            link_article_detail = article.xpath('.//a/@href').get()
-            description_article = article.xpath('.//p[@class="description"]/a/text()').get()
-            image_url = article.xpath('.//img/@data-src').get()
-            data_article_parent = {
-                'title': title_article,
-                'link': link_article_detail,
-                'description': description_article,
-                'image_url': image_url
-            }
-            if link_article_detail:
-                print("🔍 Đang lấy link:", link_article_detail)
-                yield response.follow(link_article_detail,
-                                      meta=data_article_parent, 
-                                      callback=self.parse_detail)
+                # print(article.xpath('.//h3[@class="title-news"]/a/text()').get())
+                # print(article.xpath('.//a/@href').get())
+                # print(article.xpath('.//p[@class="description"]/a/text()').get())
+                title_article = article.xpath('.//h3[@class="title-news"]/a/text()').get()
+                link_article_detail = article.xpath('.//a/@href').get()
+                description_article = article.xpath('.//p[@class="description"]/a/text()').get()
+                image_url = article.xpath('.//img/@data-src').get()
+                data_article_parent = {
+                    'title': title_article,
+                    'link': link_article_detail,
+                    'description': description_article,
+                    'image_url': image_url
+                }
+                if link_article_detail:
+                    print("🔍 Đang lấy link:", link_article_detail)
+                    yield response.follow(link_article_detail,
+                                        meta=data_article_parent, 
+                                        callback=self.parse_detail)
+                    
+        
+
+            
+    
+        
     def parse(self, response):
         html_content = response.body
         print("🔍 Đang xử lý:", response.url)
@@ -74,7 +83,9 @@ class ExpressSpider(scrapy.Spider):
         print("🔍 Danh sách category:", categorys)
         #self.log("HTML content saved to output.html")
         for category in categorys:
-            yield scrapy.Request(url=category, callback=self.get_article_category)
+            for i in range(0, 150):
+                next_page = f"{category}-p{i + 1}"
+                yield scrapy.Request(url=next_page, callback=self.get_article_category)
         
     def parse_detail(self, response):
         # with open("output.html",  "w", encoding="utf-8") as f:
@@ -86,7 +97,7 @@ class ExpressSpider(scrapy.Spider):
         #print(response.xpath('//div[contains(@class, "header-content") and contains(@class, "width_common")]//span[@class="date"]//text()').get())
         #print(response.xpath('//div[contains(@class,"sidebar-1 pin-comment")]div//h4//text()').getall())
         item = ArticleItem()
-        item['title'] = response.meta['title']
+        item['title'] = str(response.meta['title']).strip()
         item['description'] = response.meta['description']
         item['url'] = response.meta['link']
         item['author'] = response.xpath('//article//p//strong//text()').get()
