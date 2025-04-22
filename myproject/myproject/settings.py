@@ -22,7 +22,60 @@ MYSQL_PORT = 3306
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
-
+EXPRESS_SETTINGS = {
+                        "CATEGORY_URL": [ 
+                                        'https://vnexpress.net/rss/tin-tuc-24h.rss', 
+                                        'https://vnexpress.net/rss/thoi-su.rss', 
+                                        'https://vnexpress.net/rss/the-gioi.rss', 
+                                        'https://vnexpress.net/rss/kinh-doanh.rss', 
+                                        'https://vnexpress.net/rss/khoa-hoc-cong-nghe.rss', 
+                                        'https://vnexpress.net/rss/goc-nhin.rss', 
+                                        'https://vnexpress.net/rss/bat-dong-san.rss', 
+                                        'https://vnexpress.net/rss/suc-khoe.rss', 
+                                        'https://vnexpress.net/rss/the-thao.rss', 
+                                        'https://vnexpress.net/rss/giai-tri.rss', 
+                                        'https://vnexpress.net/rss/phap-luat.rss', 
+                                        'https://vnexpress.net/rss/giao-duc.rss', 
+                                        'https://vnexpress.net/rss/doi-song.rss', 
+                                        'https://vnexpress.net/rss/oto-xe-may.rss', 
+                                        'https://vnexpress.net/rss/du-lich.rss', 
+                                        'https://vnexpress.net/rss/y-kien.rss', 
+                                        'https://vnexpress.net/rss/tam-su.rss'],
+                        "ARTICLE_XPATH": '//div[contains(@class,"width_common") and contains(@class, "list-news-subfolder")]//article[@class="item-news item-news-common thumb-left"]',
+                        "ARTICLE_TITLE_XPATH": './/h3[@class="title-news"]/a/text()',
+                        "ARTICLE_LINK_XPATH": './/a/@href',
+                        "ARTICLE_DESCRIPTION_XPATH": './/p[@class="description"]/a/text()',
+                        "ARTICLE_IMAGE_URL_XPATH": './/img/@data-src',
+                        "ARTICLE_AUTHOR_XPATH": '//article//p//strong//text()',
+                        "ARTICLE_PULISHED_DATE_XPATH": '//div[contains(@class, "header-content") and contains(@class, "width_common")]//span[@class="date"]//text()',
+                        "ARTICLE_CONTENT_XPATH": '//article//p//text()',
+                        "ARTICLE_TAG_XPATH": '//div[@class="tags"]/h4[@class="item-tag"]/a/text()',
+                    }
+DAN_TRI_SETTINGS  = {
+                        "CATEGORY_URL": [    'https://dantri.com.vn/rss/kinh-doanh.rss', 
+                                             'https://dantri.com.vn/rss/xa-hoi.rss', 
+                                             'https://dantri.com.vn/rss/the-gioi.rss', 
+                                             'https://dantri.com.vn/rss/giai-tri.rss', 
+                                             'https://dantri.com.vn/rss/bat-dong-san.rss', 
+                                             'https://dantri.com.vn/rss/the-thao.rss', 
+                                             'https://dantri.com.vn/rss/suc-khoe.rss', 
+                                             'https://dantri.com.vn/rss/noi-vu.rss', 
+                                             'https://dantri.com.vn/rss/o-to-xe-may.rss', 
+                                             'https://dantri.com.vn/rss/cong-nghe.rss', 
+                                             'https://dantri.com.vn/rss/giao-duc.rss', 
+                                             'https://dantri.com.vn/rss/lao-dong-viec-lam.rss', 
+                                             'https://dantri.com.vn/rss/phap-luat.rss' 
+                                             ],
+                        "ARTICLE_XPATH": '//div[contains(@class,"article list")]//article[contains(@class,"article-item")]',
+                        "ARTICLE_TITLE_XPATH": './/div[contains(@class,"article-content")]//h3[@class="article-title"]/a/text()',
+                        "ARTICLE_LINK_XPATH": './/div[contains(@class,"article-content")]//h3[@class="article-title"]/a/@href',
+                        "ARTICLE_DESCRIPTION_XPATH": './/div[contains(@class,"article-excerpt")]/a/text()',
+                        "ARTICLE_IMAGE_URL_XPATH": './/img/@data-src',
+                        "ARTICLE_AUTHOR_XPATH": '//article//div//div//div//text()',
+                        "ARTICLE_PULISHED_DATE_XPATH": '//article//div//div//time//text()',
+                        "ARTICLE_CONTENT_XPATH": '//article//p//text()',
+                        "ARTICLE_TAG_XPATH": '//ul[@class="tags-wrap mt-30"]//li//a/text()',
+                    }
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
@@ -66,9 +119,9 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-   "myproject.pipelines.MySQLPipeline": 1,
-}
+# ITEM_PIPELINES = {
+#    "myproject.pipelines.MySQLPipeline": 1,
+# }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

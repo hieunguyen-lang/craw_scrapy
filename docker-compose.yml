@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mysql:
     image: mysql:latest
@@ -15,5 +13,30 @@ services:
       - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+
+  redis:
+    image: redis:latest
+    container_name: redis-container
+    ports:
+      - "6379:6379"  # Cổng mặc định của Redis
+    volumes:
+      - redis_data:/data
+  spider-cron:
+    build: .                  # Chỉ định thư mục hiện tại làm context build Docker
+    container_name: spider-cron
+    volumes:
+      - .:/app                 # Mount thư mục hiện tại vào thư mục /app trong container
+    command: cron -f
 volumes:
   mysql_data:
+  redis_data:
+    

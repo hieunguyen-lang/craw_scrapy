@@ -1,2 +1,4 @@
 lệnh chạy spider
 scrapy crawl express_spider -o data.json --nolog
+docker-compose down
+docker-compose up --build -d

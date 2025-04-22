@@ -1,0 +1,2 @@
+# Chạy Scrapy mỗi 10 phút
+*/10 * * * * cd /app && scrapy crawl your_spider_name >> /var/log/cron.log 2>&1
