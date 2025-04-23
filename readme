@@ -2,3 +2,5 @@ lệnh chạy spider
 scrapy crawl express_spider -o data.json --nolog
 docker-compose down
 docker-compose up --build -d
+#tạo 1 network trước khi chạy
+docker network create app-network

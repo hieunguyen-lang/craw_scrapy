@@ -6,6 +6,7 @@ from lxml import etree, html
 from bs4 import BeautifulSoup
 from myproject.rabbitmq_producer import RabbitMQClient
 import json
+from myproject.redis_client import RedisClient
 class ExpressSpider(scrapy.Spider):
     
     def __init__(self, *args, **kwargs):
@@ -13,28 +14,7 @@ class ExpressSpider(scrapy.Spider):
 
         self.rabbitmq_client = RabbitMQClient()
         self.channel = self.rabbitmq_client.channel
-        
-        
-    def get_config_for_url(self, url):
-        """
-        Lấy cấu hình từ settings.py dựa trên URL.
-        Trả về cấu hình tương ứng với URL.
-        """
-        if 'https://vnexpress.net' in url:
-            return self.settings.get('EXPRESS_SETTINGS')
-        elif 'https://dantri.com.vn' in url:
-            return self.settings.get('DAN_TRI_SETTINGS')
-    def next_page(self, url,category,i):
-        """
-        Lấy cấu hình từ settings.py dựa trên URL.
-        Trả về cấu hình tương ứng với URL.
-        """
-        if 'https://vnexpress.net' in url:
-            return f"{category}-p{i + 1}"
-        elif 'https://dantri.com.vn' in url:
-            base = category.replace(".htm", "")
-            url = f"{base}/trang-{i+1}.htm"
-            return url
+        self.redis_client = RedisClient()
     name = "express_spider"
     allowed_domains = ["vnexpress.net","dantri.com.vn"]
     start_urls = [ 
@@ -52,6 +32,15 @@ class ExpressSpider(scrapy.Spider):
         'LOG_LEVEL': 'WARNING',
         'DUPEFILTER_DEBUG': True  # Giảm log hệ thống, giữ terminal sạch
     }
+    def get_config_for_url(self, url):
+        """
+        Lấy cấu hình từ settings.py dựa trên URL.
+        Trả về cấu hình tương ứng với URL.
+        """
+        if 'https://vnexpress.net' in url:
+            return self.settings.get('EXPRESS_SETTINGS')
+        elif 'https://dantri.com.vn' in url:
+            return self.settings.get('DAN_TRI_SETTINGS')
     def convert_to_datetime(self,date_str,url):
         
         if not date_str:
@@ -120,10 +109,14 @@ class ExpressSpider(scrapy.Spider):
                     #count +=1
                     #print("🔍 Trang này có bài viết:",link_article_detail,count)
                     #truy  cập vào chi tiết bài viết
+                    if self.redis_client.is_member("url_set", link_article_detail):
+                        print(f"⚠️ Bài viết {link_article_detail} đã tồn tại trong Redis. Bỏ qua.")
+                        continue  # Nếu bài viết đã tồn tại, bỏ qua
                     if link_article_detail:
                         yield scrapy.Request(url= link_article_detail,
                                             meta=data_article_parent, 
                                             callback=self.parse_detail)
+                    self.redis_client.add_to_set("url_set", link_article_detail)   
                     
         
     def parse(self, response):

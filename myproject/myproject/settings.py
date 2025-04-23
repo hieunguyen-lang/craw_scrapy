@@ -12,7 +12,7 @@ BOT_NAME = "myproject"
 SPIDER_MODULES = ["myproject.spiders"]
 NEWSPIDER_MODULE = "myproject.spiders"
 # Cấu hình kết nối MySQL
-MYSQL_HOST = 'localhost'  # Thay đổi thành địa chỉ của máy chủ MySQL
+MYSQL_HOST = 'mysql'  # Thay đổi thành địa chỉ của máy chủ MySQL
 MYSQL_DB = 'crawl_data_express'
 MYSQL_USER = 'hieunk'
 MYSQL_PASSWORD = '123456'
